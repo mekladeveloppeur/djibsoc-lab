@@ -1,0 +1,8 @@
+// Brute force SSH - Microsoft Sentinel (table Syslog) - MITRE T1110
+Syslog
+| where TimeGenerated > ago(1h)
+| where ProcessName == "sshd" and SyslogMessage has "Failed password"
+| extend SrcIP = extract(@"from (\d{1,3}(?:\.\d{1,3}){3})", 1, SyslogMessage)
+| summarize Echecs = count(), Cibles = dcount(Computer) by SrcIP, bin(TimeGenerated, 5m)
+| where Echecs >= 10
+| order by Echecs desc

@@ -1,0 +1,7 @@
+// Echecs de connexion multiples - Entra ID (SigninLogs) - MITRE T1110.003 (password spraying)
+SigninLogs
+| where TimeGenerated > ago(1h)
+| where ResultType != 0
+| summarize Echecs = count(), Comptes = dcount(UserPrincipalName) by IPAddress, bin(TimeGenerated, 10m)
+| where Comptes >= 5 and Echecs >= 10
+| order by Echecs desc

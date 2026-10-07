@@ -1,0 +1,59 @@
+<!-- DjibSOC-Lab : regles personnalisees Wazuh (IDs 100001-100099) -->
+<group name="local,djibsoc,">
+
+  <!-- 100001 : Brute force SSH (T1110) -->
+  <rule id="100001" level="10" frequency="6" timeframe="60">
+    <if_matched_sid>5760</if_matched_sid>
+    <same_source_ip />
+    <description>DJIBSOC: Brute force SSH detecte (6 echecs en 60s depuis la meme IP).</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+    <group>authentication_failures,ssh,</group>
+  </rule>
+
+  <!-- 100002 : Creation de compte (T1136.001) -->
+  <rule id="100002" level="8">
+    <if_sid>5902</if_sid>
+    <description>DJIBSOC: Nouveau compte utilisateur cree sur le systeme.</description>
+    <mitre>
+      <id>T1136.001</id>
+    </mitre>
+    <group>account_changes,</group>
+  </rule>
+
+  <!-- 100003 : sudo vers root (T1548.003) -->
+  <rule id="100003" level="6">
+    <if_sid>5402</if_sid>
+    <description>DJIBSOC: Elevation de privileges reussie via sudo vers root.</description>
+    <mitre>
+      <id>T1548.003</id>
+    </mitre>
+    <group>privilege_escalation,</group>
+  </rule>
+
+  <!-- 100004 : Scan web (T1595) -->
+  <rule id="100004" level="9" frequency="10" timeframe="30">
+    <if_matched_sid>31101</if_matched_sid>
+    <same_source_ip />
+    <description>DJIBSOC: Scan / reconnaissance web probable (10 erreurs 400 en 30s).</description>
+    <mitre>
+      <id>T1595</id>
+    </mitre>
+    <group>web,recon,</group>
+  </rule>
+
+  <!-- 100005 : Brute force puis connexion reussie (T1110 / T1078) -->
+  <rule id="100005" level="14">
+    <if_sid>5715</if_sid>
+    <if_matched_sid>100001</if_matched_sid>
+    <same_source_ip />
+    <description>DJIBSOC: CRITIQUE - Connexion SSH reussie apres brute force depuis la meme IP.</description>
+    <mitre>
+      <id>T1110</id>
+      <id>T1078</id>
+    </mitre>
+    <group>authentication_success,ssh,</group>
+  </rule>
+
+</group>
